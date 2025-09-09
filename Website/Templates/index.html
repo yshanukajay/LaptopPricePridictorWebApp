@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Laptop Price Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 35px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .form {
+            animation: fadeInSequence 1s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInSequence {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .inputfield {
+            margin-bottom: 24px;
+            position: relative;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .inputfield:nth-child(1) { animation-delay: 0.1s; }
+        .inputfield:nth-child(2) { animation-delay: 0.2s; }
+        .inputfield:nth-child(3) { animation-delay: 0.3s; }
+        .inputfield:nth-child(4) { animation-delay: 0.4s; }
+        .inputfield:nth-child(5) { animation-delay: 0.5s; }
+        .inputfield:nth-child(6) { animation-delay: 0.6s; }
+        .inputfield:nth-child(7) { animation-delay: 0.7s; }
+        .inputfield:nth-child(8) { animation-delay: 0.8s; }
+        .inputfield:nth-child(9) { animation-delay: 0.9s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .inputfield label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .input, .custom_select select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            font-family: inherit;
+        }
+
+        .input:focus, .custom_select select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input:hover, .custom_select select:hover {
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+
+        .custom_select {
+            position: relative;
+        }
+
+        .custom_select::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+        }
+
+        .custom_select:hover::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .custom_select select {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 50px;
+        }
+
+        .check {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin: 28px 0;
+            animation: fadeInUp 0.6s ease-out 0.8s both;
+        }
+
+        .check > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .check > div:hover {
+            background: #f1f5f9;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+
+        .check label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #4b5563;
+            margin: 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: fadeInUp 0.6s ease-out 1s both;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .result {
+            margin-top: 30px;
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out 1.2s both;
+        }
+
+        .result p {
+            display: inline-block;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            animation: bounce 0.6s ease-out;
+            position: relative;
+        }
+
+        .result p::before {
+            content: '💰';
+            margin-right: 10px;
+        }
+
+        @keyframes bounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Add icons to labels */
+        .inputfield:nth-child(1) label::before { content: '🔧 '; }
+        .inputfield:nth-child(2) label::before { content: '⚖️ '; }
+        .inputfield:nth-child(3) label::before { content: '🏢 '; }
+        .inputfield:nth-child(4) label::before { content: '💻 '; }
+        .inputfield:nth-child(5) label::before { content: '💿 '; }
+        .inputfield:nth-child(6) label::before { content: '🔲 '; }
+        .inputfield:nth-child(7) label::before { content: '🎮 '; }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .wrapper {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .check {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* Loading animation for form submission */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Laptop Price Predictor</div>
+        <form action="/" method="POST">
+            <div class="form">
+                <div class="inputfield">
+                    <label for="ram">Ram (GB)</label>
+                    <input class="input" type="text" name="ram" required>
+                </div>
+                <div class="inputfield">
+                    <label for="weight">Weight (Kg)</label>
+                    <input class="input" type="text" name="weight" required>
+                </div>
+                <div class="inputfield">
+                    <label for="company">Company</label>
+                    <div class = "custom_select">
+                        <select name="company" id="company">
+                            <option value="" selected hidden>Select</option>
+                            <option value="acer">Acer</option>
+                            <option value="apple">Apple</option>
+                            <option value="asus">Asus</option>
+                            <option value="dell">Dell</option>
+                            <option value="hp">HP</option>
+                            <option value="lenovo">Lenovo</option>
+                            <option value="msi">MSI</option>
+                            <option value="toshiba">Toshiba</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="inputfield">
+                    <label for="typename">Type Name</label>
+                    <div class = "custom_select">
+                        <select name="typename" id="typename">
+                            <option value="" selected hidden>Select</option>
+                            <option value="2in1convertible">2 in 1 Convertible</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="netbook">Net Book</option>
+                            <option value="notebook">Note Book</option>
+                            <option value="ultrabook">Ultra Book</option>
+                            <option value="workstation">Workstation</option>
+                        </select> 
+                    </div>
+                </div>
+                <div class="inputfield">
+                    <label for="opsys">Operating System</label>           
+                    <div class = "custom_select">
+                        <select name="opsys" id="opsys">
+                            <option value="" selected hidden>Select</option>
+                            <option value="windows">Windows</option>
+                            <option value="mac">Mac</option>
+                            <option value="linux">Linux</option>
+                            <option value="other">Other</option>
+                        </select> 
+                    </div>
+                </div>
+                <div class="inputfield">
+                    <label for="cpuname">CPU</label>   
+                    <div class = "custom_select">
+                        <select name="cpuname" id="cpuname">
+                            <option value="" selected hidden>Select</option>
+                            <option value="intelcorei3">Intel Core i3</option>
+                            <option value="intelcorei5">Intel Core i5</option>
+                            <option value="intelcorei7">Intel Core i7</option>
+                            <option value="amd">AMD</option>
+                            <option value="other">Other</option>
+                        </select>  
+                    </div>
+                </div>
+                <div class="inputfield">
+                    <label for="gpuname">GPU</label>
+                    <div class = "custom_select">
+                        <select name="gpuname" id="gpuname">
+                            <option value="" selected hidden>Select</option>
+                            <option value="intel">Intel</option>
+                            <option value="amd">AMD</option>
+                            <option value="nvidia">Nvidia</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="check">   
+                    <div>
+                        <label for="touchscreen">Touch Screen</label>
+                        <input type="checkbox" name="touchscreen">
+                    </div>
+                    <div>
+                        <label for="ips">IPS</label>
+                        <input type="checkbox" name="ips">
+                    </div>
+                </div>
+    
+                <div class="inputfield">
+                    <input class="btn" type="submit" value="Predict Price">
+                </div>
+            </div>
+        </form>
+
+        <div class="result">
+            {% if pred_value != 0 %}
+            <p>Estimated Price : LKR {{pred_value}}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Add smooth loading animation
+        document.querySelector('form').addEventListener('submit', function() {
+            const btn = document.querySelector('.btn');
+            btn.classList.add('loading');
+        });
+
+        // Add smooth focus transitions
+        const inputs = document.querySelectorAll('.input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add interactive checkbox animations
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.parentElement.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))';
+                    this.parentElement.style.borderColor = '#667eea';
+                } else {
+                    this.parentElement.style.background = '#f8fafc';
+                    this.parentElement.style.borderColor = '#e2e8f0';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
